@@ -21,7 +21,7 @@
 
 	<distributionManagement>
 		<repository>
-			<id>github</id>
+			<id>github-work</id>
 			<name>GitHub decentralized-identity uni-resolver-driver-did-work</name>
 			<url>https://maven.pkg.github.com/decentralized-identity/uni-resolver-driver-did-work</url>
 		</repository>
