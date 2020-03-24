@@ -17,4 +17,4 @@ jobs:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         DOCKER_FILE: docker/Dockerfile
-        CONTAINER_TAG: universalresolver/driver-did-work:0.1.x
+        CONTAINER_TAG: universalresolver/driver-did-work:0.1.0
