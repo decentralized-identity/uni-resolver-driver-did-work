@@ -54,6 +54,8 @@ public class DIDWorkDriver implements Driver {
 		httpGet.setHeader("x-api-key", API_KEY);
 
 		CloseableHttpResponse httpResponse = (CloseableHttpResponse) client.execute(httpGet);
+		if(httpResponse.getStatusLine().getStatusCode() == 404)
+			throw new Exception("DID not found: " + identifier);
 		if(httpResponse.getStatusLine().getStatusCode() != 200)
 			throw new Exception("Cannot retrieve DIDDocument for DID " + identifier);
 
@@ -85,7 +87,7 @@ public class DIDWorkDriver implements Driver {
 		try {
 			returnedDocument = getDocumentFromWork(identifier);
 		} catch (Exception e) {
-			throw new ResolutionException(e);
+			throw new ResolutionException(e.getMessage());
 		}
 
 		// get the pubkeys
