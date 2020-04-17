@@ -1,13 +1,14 @@
 # Dockerfile for universalresolver/driver-did-work
 
 FROM universalresolver/base-ubuntu
-MAINTAINER Marius Maaland <marius.maaland@workday.com>
+MAINTAINER Jonathan Reynolds <jonathan.reynolds@workday.com>
 
 # install dependencies
 
 ARG GITHUB_READ_PACKAGES_OWNER
 ARG GITHUB_READ_PACKAGES_TOKEN
 ADD ./settings.xml /root/.m2/
+ADD ./docker/VERSION .
 
 # build driver-did-work
 
