@@ -91,16 +91,18 @@ public class DIDWorkDriver implements Driver {
 		// get the pubkeys
 		List<PublicKey> pubKeys = new ArrayList<>();
 		try {
-			JSONArray pubKeysJSON = returnedDocument.getJSONArray("publicKey");
-			for (int i = 0; i < pubKeysJSON.length(); i ++) {
-				JSONObject pubKey = pubKeysJSON.getJSONObject(i);
-				String controller = null;
-				if (pubKey.has("controller")) {
-					controller = pubKey.getString("controller");
+			Object maybePubKeys = returnedDocument.get("publicKey");
+			if (maybePubKeys instanceof JSONArray) {
+				JSONArray pubKeysJSON = returnedDocument.getJSONArray("publicKey");
+				for (int i = 0; i < pubKeysJSON.length(); i ++) {
+					JSONObject pubKey = pubKeysJSON.getJSONObject(i);
+					String controller = null;
+					if (pubKey.has("controller")) {
+						controller = pubKey.getString("controller");
+					}
+					PublicKey publicKey = buildPublicKey(pubKey.getString("id"), new String[] { pubKey.getString("type") }, pubKey.getString("publicKeyBase58"), controller);
+					pubKeys.add(publicKey);
 				}
-				PublicKey publicKey = buildPublicKey(pubKey.getString("id"), new String[] { pubKey.getString("type") }, pubKey.getString("publicKeyBase58"), controller);
-				pubKeys.add(publicKey);
-
 			}
 		} catch (JSONException e) {
 			throw new ResolutionException(e);

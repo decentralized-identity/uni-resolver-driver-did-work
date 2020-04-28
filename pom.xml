@@ -5,7 +5,7 @@
 	<artifactId>uni-resolver-driver-did-work</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<name>uni-resolver-driver-did-work</name>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 
 	<parent>
 		<groupId>decentralized-identity</groupId>
