@@ -5,12 +5,12 @@
 	<artifactId>uni-resolver-driver-did-work</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<name>uni-resolver-driver-did-work</name>
-	<version>0.2</version>
+	<version>0.3</version>
 
 	<parent>
 		<groupId>decentralized-identity</groupId>
 		<artifactId>uni-resolver</artifactId>
-		<version>0.1.0</version>
+		<version>0.3.1</version>
 	</parent>
 
 	<repositories>
@@ -39,12 +39,10 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
-						<version>3.2.2</version>
 					</plugin>
 					<plugin>
 						<groupId>org.eclipse.jetty</groupId>
 						<artifactId>jetty-maven-plugin</artifactId>
-						<version>9.4.18.v20190429</version>
 						<configuration>
 							<jettyConfig>
 								${basedir}/src/test/resources/jetty.xml
@@ -105,7 +103,7 @@
 		<dependency>
 			<groupId>decentralized-identity</groupId>
 			<artifactId>uni-resolver-driver</artifactId>
-			<version>0.1.0</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
