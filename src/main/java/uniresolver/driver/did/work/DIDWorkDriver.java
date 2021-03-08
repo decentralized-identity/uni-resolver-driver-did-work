@@ -12,14 +12,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.util.EntityUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
+import foundation.identity.did.DIDDocument;
 
-import did.DIDDocument;
-import did.PublicKey;
-import did.Service;
-import did.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniresolver.ResolutionException;
@@ -48,7 +42,7 @@ public class DIDWorkDriver implements Driver {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 	}
-	private JSONObject getDocumentFromWork(String identifier) throws Exception {
+	String getDocumentFromWork(String identifier) throws Exception {
 		HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
 		HttpGet httpGet = new HttpGet(WORK_DOMAIN + "/v1/did/" + identifier);
 		httpGet.setHeader("x-api-key", API_KEY);
@@ -59,16 +53,9 @@ public class DIDWorkDriver implements Driver {
 
 		HttpEntity httpEntity = httpResponse.getEntity();
 		String entityString = EntityUtils.toString(httpEntity);
-		EntityUtils.consume(httpEntity);
-
-		return new JSONObject(entityString);
+		return entityString;
 	}
 
-	private static PublicKey buildPublicKey(String id, String[] type, String publicKey, String controller) {
-		PublicKey pubKey = PublicKey.build(id, type, null, publicKey, null, null);
-		pubKey.setJsonLdObjectKeyValue("controller", controller);
-		return pubKey;
-	}
 
 	@Override
 	public ResolveResult resolve(String identifier) throws ResolutionException {
@@ -80,75 +67,16 @@ public class DIDWorkDriver implements Driver {
 			return null;
 		}
 
-		// fetch document from Workday Credentialing Platform
-		JSONObject returnedDocument;
+		DIDDocument didDoc;
 		try {
-			returnedDocument = getDocumentFromWork(identifier);
+			String returnedDocument = getDocumentFromWork(identifier);
+			didDoc = DIDDocument.fromJson(returnedDocument);
 		} catch (Exception e) {
 			throw new ResolutionException(e);
 		}
-
-		// get the pubkeys
-		List<PublicKey> pubKeys = new ArrayList<>();
-		try {
-			Object maybePubKeys = returnedDocument.get("publicKey");
-			if (maybePubKeys instanceof JSONArray) {
-				JSONArray pubKeysJSON = returnedDocument.getJSONArray("publicKey");
-				for (int i = 0; i < pubKeysJSON.length(); i ++) {
-					JSONObject pubKey = pubKeysJSON.getJSONObject(i);
-					String controller = null;
-					if (pubKey.has("controller")) {
-						controller = pubKey.getString("controller");
-					}
-					PublicKey publicKey = buildPublicKey(pubKey.getString("id"), new String[] { pubKey.getString("type") }, pubKey.getString("publicKeyBase58"), controller);
-					pubKeys.add(publicKey);
-				}
-			}
-		} catch (JSONException e) {
-			throw new ResolutionException(e);
-		}
-
-		// get the service endpoints
-		List<Service> serviceEndpoints = new ArrayList<>();
-		if (!returnedDocument.isNull("service")) {
-			try {
-				JSONArray serviceEndpointsJSON = returnedDocument.getJSONArray("service");
-				for (int i = 0; i < serviceEndpointsJSON.length(); i++) {
-					JSONObject serviceEndpoint = serviceEndpointsJSON.getJSONObject(i);
-					Service service = Service.build(serviceEndpoint.getString("type"), serviceEndpoint.getString("serviceEndpoint"));
-					serviceEndpoints.add(service);
-
-				}
-			} catch (JSONException e) {
-				throw new ResolutionException(e);
-			}
-		}
-
-		// get the authentication keys
-		List<Authentication> authenticationKeys = new ArrayList<>();
-		if (!returnedDocument.isNull("authentication")) {
-			try {
-				JSONArray authenticationKeysJSON = returnedDocument.getJSONArray("authentication");
-				for (int i = 0; i < authenticationKeysJSON.length(); i++) {
-					Object authenticationKeyObj = authenticationKeysJSON.get(i);
-					JSONObject authenticationKey = (JSONObject) authenticationKeyObj;
-					Authentication authentication = Authentication.build(authenticationKey.getString("id"), new String[]{authenticationKey.getString("types")}, authenticationKey.getString("publicKey"));
-					authenticationKeys.add(authentication);
-				}
-			} catch (JSONException e) {
-				throw new ResolutionException(e);
-			}
-		}
-
-		// todo: get the proof value
-		// did-common-java doesn't seem to support proof yet
-		// consider making a PR
-
-		// create DDO
-		DIDDocument didDocument = DIDDocument.build(identifier, pubKeys, authenticationKeys, serviceEndpoints);
-
-		// done
-		return ResolveResult.build(didDocument);
+		ResolveResult result = ResolveResult.build(didDoc);
+		result.setContentType(DIDDocument.MIME_TYPE_JSON_LD);
+		return result;
 	}
 
 	@Override

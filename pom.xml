@@ -5,12 +5,12 @@
 	<artifactId>uni-resolver-driver-did-work</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<name>uni-resolver-driver-did-work</name>
-	<version>0.2</version>
+	<version>0.3</version>
 
 	<parent>
 		<groupId>decentralized-identity</groupId>
 		<artifactId>uni-resolver</artifactId>
-		<version>0.1.0</version>
+		<version>0.3.1</version>
 	</parent>
 
 	<repositories>
@@ -39,20 +39,14 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
-						<version>3.2.2</version>
 					</plugin>
 					<plugin>
 						<groupId>org.eclipse.jetty</groupId>
 						<artifactId>jetty-maven-plugin</artifactId>
-						<version>9.4.18.v20190429</version>
 						<configuration>
 							<jettyConfig>
 								${basedir}/src/test/resources/jetty.xml
 							</jettyConfig>
-							<jettyEnvXml>
-								${basedir}/src/test/resources/jetty-env.xml
-							</jettyEnvXml>
-							<contextPath>/</contextPath>
 							<useTestClasspath>true</useTestClasspath>
 							<systemProperties>
 								<systemProperty>
@@ -64,35 +58,19 @@
 									<value>true</value>
 								</systemProperty>
 								<systemProperty>
-									<name>log4j.configuration</name>
-									<value>file:${basedir}/src/test/resources/log4j.properties</value>
+									<name>log4j2.configurationFile</name>
+									<value>file:${basedir}/src/test/resources/log4j2-test.properties</value>
 								</systemProperty>
 							</systemProperties>
 							<webApp>
+								<contextPath>/</contextPath>
+								<jettyEnvXml>
+									${basedir}/src/test/resources/jetty-env.xml
+								</jettyEnvXml>
 								<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
 								<containerIncludeJarPattern>^$</containerIncludeJarPattern>
 							</webApp>
 						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>org.slf4j</groupId>
-								<artifactId>slf4j-api</artifactId>
-								<version>1.7.25</version>
-								<scope>compile</scope>
-							</dependency>
-							<dependency>
-								<groupId>org.slf4j</groupId>
-								<artifactId>jcl-over-slf4j</artifactId>
-								<version>1.7.25</version>
-								<scope>compile</scope>
-							</dependency>
-							<dependency>
-								<groupId>org.slf4j</groupId>
-								<artifactId>slf4j-log4j12</artifactId>
-								<version>1.7.25</version>
-								<scope>compile</scope>
-							</dependency>
-						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -105,7 +83,7 @@
 		<dependency>
 			<groupId>decentralized-identity</groupId>
 			<artifactId>uni-resolver-driver</artifactId>
-			<version>0.1.0</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -123,6 +101,12 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.6</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
